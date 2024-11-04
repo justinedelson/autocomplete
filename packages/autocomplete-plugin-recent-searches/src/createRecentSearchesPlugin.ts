@@ -7,9 +7,15 @@ import {
 import { createRef, MaybePromise, warn } from '@algolia/autocomplete-shared';
 import { SearchOptions } from '@algolia/client-search';
 
+import { defaultTranslations } from './constants';
 import { createStorageApi } from './createStorageApi';
 import { getTemplates } from './getTemplates';
-import { RecentSearchesItem, Storage, StorageApi } from './types';
+import {
+  RecentSearchesItem,
+  Storage,
+  StorageApi,
+  AutocompleteRecentSearchesPluginTranslations,
+} from './types';
 
 export interface RecentSearchesPluginData<TItem extends RecentSearchesItem>
   extends StorageApi<TItem> {
@@ -44,6 +50,13 @@ export type CreateRecentSearchesPluginParams<TItem extends RecentSearchesItem> =
       onTapAhead(item: TItem): void;
     }): AutocompleteSource<TItem>;
     subscribe?(params: PluginSubscribeParams<TItem>): void;
+
+    /**
+     * A mapping of translation strings.
+     *
+     * Defaults to English values.
+     */
+    translations?: Partial<AutocompleteRecentSearchesPluginTranslations>;
   };
 
 function getDefaultSubscribe<TItem extends RecentSearchesItem>(
@@ -68,7 +81,8 @@ function getDefaultSubscribe<TItem extends RecentSearchesItem>(
 export function createRecentSearchesPlugin<TItem extends RecentSearchesItem>(
   options: CreateRecentSearchesPluginParams<TItem>
 ): AutocompletePlugin<TItem, RecentSearchesPluginData<TItem>> {
-  const { storage, transformSource, subscribe } = getOptions(options);
+  const { storage, transformSource, subscribe, translations } =
+    getOptions(options);
   const store = createStorageApi<TItem>(storage);
   const lastItemsRef = createRef<MaybePromise<TItem[]>>([]);
 
@@ -114,7 +128,7 @@ export function createRecentSearchesPlugin<TItem extends RecentSearchesItem>(
               getItems() {
                 return items;
               },
-              templates: getTemplates({ onRemove, onTapAhead }),
+              templates: getTemplates({ onRemove, onTapAhead, translations }),
             },
             onRemove,
             onTapAhead,
@@ -164,5 +178,9 @@ function getOptions<TItem extends RecentSearchesItem>(
   return {
     transformSource: ({ source }) => source,
     ...options,
+    translations: {
+      ...defaultTranslations,
+      ...options.translations,
+    },
   };
 }

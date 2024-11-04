@@ -2,16 +2,21 @@
 /** @jsx createElement */
 import { SourceTemplates } from '@algolia/autocomplete-js';
 
-import { RecentSearchesItem } from './types';
+import {
+  RecentSearchesItem,
+  AutocompleteRecentSearchesPluginTranslations,
+} from './types';
 
 export type GetTemplatesParams<TItem extends RecentSearchesItem> = {
   onRemove(id: string): void;
   onTapAhead(item: TItem): void;
+  translations: AutocompleteRecentSearchesPluginTranslations;
 };
 
 export function getTemplates<TItem extends RecentSearchesItem>({
   onRemove,
   onTapAhead,
+  translations,
 }: GetTemplatesParams<TItem>): SourceTemplates<TItem> {
   return {
     item({ item, createElement, components }) {
@@ -40,7 +45,7 @@ export function getTemplates<TItem extends RecentSearchesItem>({
           <div className="aa-ItemActions">
             <button
               className="aa-ItemActionButton"
-              title="Remove this search"
+              title={translations.removeSearchTitle}
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -53,7 +58,7 @@ export function getTemplates<TItem extends RecentSearchesItem>({
             </button>
             <button
               className="aa-ItemActionButton"
-              title={`Fill query with "${item.label}"`}
+              title={translations.fillQueryTitle(item.label)}
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();

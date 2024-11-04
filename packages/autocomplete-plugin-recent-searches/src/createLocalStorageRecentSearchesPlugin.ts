@@ -1,6 +1,6 @@
 import { AutocompletePlugin } from '@algolia/autocomplete-js';
 
-import { LOCAL_STORAGE_KEY } from './constants';
+import { defaultTranslations, LOCAL_STORAGE_KEY } from './constants';
 import { createLocalStorage } from './createLocalStorage';
 import {
   createRecentSearchesPlugin,
@@ -49,7 +49,7 @@ export type CreateRecentSearchesLocalStorageOptions<
 type LocalStorageRecentSearchesPluginOptions<TItem extends RecentSearchesItem> =
   Pick<
     CreateRecentSearchesPluginParams<TItem>,
-    'transformSource' | 'subscribe'
+    'transformSource' | 'subscribe' | 'translations'
   > &
     CreateRecentSearchesLocalStorageOptions<TItem>;
 
@@ -87,5 +87,9 @@ function getOptions<TItem extends RecentSearchesItem>(
     search: defaultSearch,
     transformSource: ({ source }) => source,
     ...options,
+    translations: {
+      ...defaultTranslations,
+      ...options.translations,
+    },
   };
 }
