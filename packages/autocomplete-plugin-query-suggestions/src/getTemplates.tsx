@@ -2,14 +2,19 @@
 /** @jsx createElement */
 import { SourceTemplates } from '@algolia/autocomplete-js';
 
-import { QuerySuggestionsHit } from './types';
+import {
+  AutocompleteSuggestionsPluginTranslations,
+  QuerySuggestionsHit,
+} from './types';
 
 export type GetTemplatesParams<TItem extends QuerySuggestionsHit> = {
   onTapAhead(item: TItem): void;
+  translations: AutocompleteSuggestionsPluginTranslations;
 };
 
 export function getTemplates<TItem extends QuerySuggestionsHit>({
   onTapAhead,
+  translations,
 }: GetTemplatesParams<TItem>): SourceTemplates<TItem> {
   return {
     item({ item, createElement, components }) {
@@ -48,7 +53,7 @@ export function getTemplates<TItem extends QuerySuggestionsHit>({
           <div className="aa-ItemActions">
             <button
               className="aa-ItemActionButton"
-              title={`Fill query with "${item.query}"`}
+              title={translations.fillQueryTitle(item.query)}
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();

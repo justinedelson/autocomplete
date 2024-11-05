@@ -8,8 +8,13 @@ import { getAttributeValueByPath } from '@algolia/autocomplete-shared';
 import { SearchOptions } from '@algolia/client-search';
 import { SearchClient } from 'algoliasearch/lite';
 
+import { defaultTranslations } from './constants';
 import { getTemplates } from './getTemplates';
-import { AutocompleteQuerySuggestionsHit, QuerySuggestionsHit } from './types';
+import {
+  AutocompleteQuerySuggestionsHit,
+  AutocompleteSuggestionsPluginTranslations,
+  QuerySuggestionsHit,
+} from './types';
 
 export type CreateQuerySuggestionsPluginParams<
   TItem extends QuerySuggestionsHit
@@ -64,6 +69,13 @@ export type CreateQuerySuggestionsPluginParams<
    * @link https://www.algolia.com/doc/ui-libraries/autocomplete/api-reference/autocomplete-plugin-query-suggestions/createQuerySuggestionsPlugin/#param-categoriesperitem
    */
   categoriesPerItem?: number;
+
+  /**
+   * A mapping of translation strings.
+   *
+   * Defaults to English values.
+   */
+  translations?: Partial<AutocompleteSuggestionsPluginTranslations>;
 };
 
 export function createQuerySuggestionsPlugin<
@@ -79,6 +91,7 @@ export function createQuerySuggestionsPlugin<
     categoryAttribute,
     itemsWithCategories,
     categoriesPerItem,
+    translations,
   } = getOptions(options);
 
   return {
@@ -156,7 +169,7 @@ export function createQuerySuggestionsPlugin<
                 },
               });
             },
-            templates: getTemplates({ onTapAhead }),
+            templates: getTemplates({ onTapAhead, translations }),
           },
           onTapAhead,
           state: state as AutocompleteState<TItem>,
@@ -176,5 +189,9 @@ function getOptions<TItem extends AutocompleteQuerySuggestionsHit>(
     itemsWithCategories: 1,
     categoriesPerItem: 1,
     ...options,
+    translations: {
+      ...defaultTranslations,
+      ...options.translations,
+    },
   };
 }
